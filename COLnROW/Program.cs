@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace COLSnROWS {
     
@@ -11,6 +12,9 @@ namespace COLSnROWS {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.SetWindowSize(33, 6);//Always first
             Console.SetBufferSize(33, 6);//Always second
+
+            MainMenu();
+
             //Console.WriteLine("Ancho del buffer: {0}", Console.BufferWidth);
             //Console.WriteLine("Alto del buffer: {0}", Console.BufferHeight);
             //Console.WriteLine("Ancho de la ventana: {0}", Console.WindowWidth);
@@ -18,9 +22,70 @@ namespace COLSnROWS {
 
             string[,] board = new string[5, 5];
             int X_score = 0, O_score = 0;
-            
+
             Game(board, X_score, O_score);
-            
+
+        }
+
+        public static void SleepTime(int miliseconds) {
+            var t = Task.Run(async delegate {
+                await Task.Delay(miliseconds);
+                return 42;
+            });
+            t.Wait();
+        }
+
+        public static void press() {
+            while (true) {
+                SleepTime(200);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+                SleepTime(150);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+                SleepTime(100);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+                SleepTime(50);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+            }
+        }
+
+        private static void MainMenu() {
+            MainMenu:
+            Console.Clear();
+            Console.CursorVisible = false;
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.SetCursorPosition(12, 2);
+            Console.Write("Cols&Rows");
+            ConsoleKeyInfo direction;
+            Thread t = new Thread(press);
+            t.Start();
+            direction = Console.ReadKey(true);
+            switch (direction.Key) {
+                case ConsoleKey.Spacebar:
+                    try {
+                        t.Abort();
+                        Console.CursorVisible = true;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.ForegroundColor = ConsoleColor.White;
+                    } catch (Exception) {
+                    }
+                    break;
+                default:
+                    t.Abort();
+                    goto MainMenu;
+            }
         }
 
         public static void CheckScoreBoard() {
@@ -192,6 +257,10 @@ namespace COLSnROWS {
                                 //Console.WriteLine("abajo!");
                                 goto again;
                             }
+                        case ConsoleKey.Spacebar:
+                            break;
+                        default:
+                            goto again;
                     }
                 } while (direction.Key != ConsoleKey.Spacebar);
                 return Console.CursorLeft + "," + Console.CursorTop;
