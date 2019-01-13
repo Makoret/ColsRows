@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using WMPLib;
 
 namespace COLSnROWS {
 
@@ -12,6 +13,7 @@ namespace COLSnROWS {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.SetWindowSize(33, 6);//Always first
             Console.SetBufferSize(33, 6);//Always second
+            System.Media.SoundPlayer SP = new System.Media.SoundPlayer();
 
             MainMenu();
             //it will only continue if the player presses spacebar
@@ -81,6 +83,7 @@ namespace COLSnROWS {
                 }
         //The game loop
         public static void Game(string [,] Array, int X_score, int O_score) {
+            
             Start:
             BoardInit(Array);
             bool side = true;
@@ -98,9 +101,11 @@ namespace COLSnROWS {
                     if (side) {
                         Array[Xpos, Ypos] = "X";
                         side = false;
+                        MusicPlay(Environment.CurrentDirectory + @"\Audio\Turn_bell.wav");
                     } else {
                         Array[Xpos, Ypos] = "O";
                         side = true;
+                        MusicPlay(Environment.CurrentDirectory + @"\Audio\Turn_bell.wav");
                     }
                     ShowBoard(Array, X_score, O_score, side);
                     turn++;
@@ -110,6 +115,7 @@ namespace COLSnROWS {
                 }
             } while (veredict.Equals("continue"));
             if (veredict.Equals("DRAW!")) {
+                MusicPlay(Environment.CurrentDirectory + @"\Audio\End_Turn_bell.wav");
                 AskAgain:
                 Console.SetCursorPosition(0, 5);
                 Console.Write("Continue?(y/n)");
@@ -124,14 +130,18 @@ namespace COLSnROWS {
                     goto AskAgain;
                 }
             } else {
+                Console.SetCursorPosition(0, 5);
+                Console.Write(veredict);
                 veredict = veredict.Remove(1);
                 if (veredict.Equals("X")) {
                     X_score++;
+                    MusicPlay(Environment.CurrentDirectory + @"\Audio\End_Turn_bell.wav");
                 } else {
                     O_score++;
+                    MusicPlay(Environment.CurrentDirectory + @"\Audio\End_Turn_bell.wav");
                 }
                 AskAgain:
-                Console.SetCursorPosition(0, 5);
+                Console.SetCursorPosition(10, 5);
                 Console.Write("Continue?(y/n)");
                 ConsoleKeyInfo opt = Console.ReadKey(true);
                 if (opt.Key == ConsoleKey.Y) {
@@ -343,6 +353,13 @@ namespace COLSnROWS {
                 Console.SetCursorPosition(10, 4);
                 Console.Write("Press spacebar");
             }
+        }
+
+        public static void MusicPlay(String Address) {
+            WindowsMediaPlayer Player = new WindowsMediaPlayer();
+            Player.URL = Address;
+            Player.controls.play();
+            Player.settings.volume = 10;
         }
     }
 }

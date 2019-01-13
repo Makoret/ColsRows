@@ -5,3 +5,5 @@ C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLSnROWS.csprojAssemblyRef
 C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLSnROWS.csproj.CoreCompileInputs.cache
 C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLnROW.exe
 C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLnROW.pdb
+C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\Interop.WMPLib.dll
+C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLSnROWS.csproj.ResolveComReference.cache
