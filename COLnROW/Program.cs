@@ -3,10 +3,10 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace COLSnROWS {
-    
+
     class Program {
 
-        static void Main(string[] args) {
+        public static void Main(string[] args) {
             Console.Title = "Cols&Rows";
             Console.ForegroundColor = ConsoleColor.White;
             Console.BackgroundColor = ConsoleColor.Black;
@@ -14,53 +14,16 @@ namespace COLSnROWS {
             Console.SetBufferSize(33, 6);//Always second
 
             MainMenu();
+            //it will only continue if the player presses spacebar
+            string[,] board = new string[5, 5];//creates the board array
+            int X_score = 0, O_score = 0;//sets score to 0
 
-            //Console.WriteLine("Ancho del buffer: {0}", Console.BufferWidth);
-            //Console.WriteLine("Alto del buffer: {0}", Console.BufferHeight);
-            //Console.WriteLine("Ancho de la ventana: {0}", Console.WindowWidth);
-            //Console.WriteLine("Alto de la ventana: {0}", Console.WindowHeight);
-
-            string[,] board = new string[5, 5];
-            int X_score = 0, O_score = 0;
-
-            Game(board, X_score, O_score);
+            Game(board, X_score, O_score);//game starts
 
         }
 
-        public static void SleepTime(int miliseconds) {
-            var t = Task.Run(async delegate {
-                await Task.Delay(miliseconds);
-                return 42;
-            });
-            t.Wait();
-        }
-
-        public static void press() {
-            while (true) {
-                SleepTime(200);
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Black;
-                Console.SetCursorPosition(10, 4);
-                Console.Write("Press spacebar");
-                SleepTime(150);
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.SetCursorPosition(10, 4);
-                Console.Write("Press spacebar");
-                SleepTime(100);
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.SetCursorPosition(10, 4);
-                Console.Write("Press spacebar");
-                SleepTime(50);
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.SetCursorPosition(10, 4);
-                Console.Write("Press spacebar");
-            }
-        }
-
-        private static void MainMenu() {
+        //First thing to show up waitting for a player
+        public static void MainMenu() {
             MainMenu:
             Console.Clear();
             Console.CursorVisible = false;
@@ -68,11 +31,12 @@ namespace COLSnROWS {
             Console.ForegroundColor = ConsoleColor.White;
             Console.SetCursorPosition(12, 2);
             Console.Write("Cols&Rows");
-            ConsoleKeyInfo direction;
+            ConsoleKeyInfo Activeness;
+            //Calls the method press to run parallel to this method without interfering
             Thread t = new Thread(press);
             t.Start();
-            direction = Console.ReadKey(true);
-            switch (direction.Key) {
+            Activeness = Console.ReadKey(true);
+            switch (Activeness.Key) {
                 case ConsoleKey.Spacebar:
                     try {
                         t.Abort();
@@ -82,24 +46,45 @@ namespace COLSnROWS {
                     } catch (Exception) {
                     }
                     break;
-                default:
+                default://In case the user press anything but the spacebar key
                     t.Abort();
                     goto MainMenu;
             }
         }
+        //Initialize the board
+        public static string[,] BoardInit(string[,] Array) {
+            
+                    bool floor = false;
+                    bool wall = false;
 
-        public static void CheckScoreBoard() {
-            for (int i = 0; i < 3; i++) {
-                Console.WriteLine("Working thread...");
-                Thread.Sleep(100);
-            }
-        }
-
-        static void Game(string [,] Array, int X_score, int O_score) {
+                    for (int x = 0; x < 5; x++) {
+                        if (floor == false) {
+                            for (int y = 0; y < 5; y++) {
+                                if (wall == true) {
+                                    Array[x, y] = "|";
+                                    wall = false;
+                                } else {
+                                    Array[x, y] = " ";
+                                    wall = true;
+                                }
+                            }
+                            wall = false;
+                            floor = true;
+                        } else {
+                            for (int y = 0; y < 5; y++) {
+                                Array[x, y] = "-";
+                            }
+                            floor = false;
+                        }
+                    }
+                    return Array;
+                }
+        //The game loop
+        public static void Game(string [,] Array, int X_score, int O_score) {
             Start:
             BoardInit(Array);
-            ShowBoard(Array, X_score, O_score);
             bool side = true;
+            side = ShowBoard(Array, X_score, O_score, side);
             int turn = 0;
             String veredict = "continue";
             String Consult = ""; 
@@ -117,7 +102,7 @@ namespace COLSnROWS {
                         Array[Xpos, Ypos] = "O";
                         side = true;
                     }
-                    ShowBoard(Array, X_score, O_score);
+                    ShowBoard(Array, X_score, O_score, side);
                     turn++;
                     if (turn >= 5) {
                         veredict = Check(Array, turn);
@@ -160,36 +145,8 @@ namespace COLSnROWS {
                 }
             }
         }
-
-        static string[,] BoardInit(string[,] Array) {
-            
-            bool floor = false;
-            bool wall = false;
-
-            for (int x = 0; x < 5; x++) {
-                if (floor == false) {
-                    for (int y = 0; y < 5; y++) {
-                        if (wall == true) {
-                            Array[x, y] = "|";
-                            wall = false;
-                        } else {
-                            Array[x, y] = " ";
-                            wall = true;
-                        }
-                    }
-                    wall = false;
-                    floor = true;
-                } else {
-                    for (int y = 0; y < 5; y++) {
-                        Array[x, y] = "-";
-                    }
-                    floor = false;
-                }
-            }
-            return Array;
-        }
-
-        static void ShowBoard(string[,] Array, int X_score, int O_score) {
+        //Method to show up the board and score values
+        public static bool ShowBoard(string[,] Array, int X_score, int O_score, bool player) {
             Console.Clear();
             for (int i = 0; i < 5; i++) {
                 for (int z = 0; z < 5; z++) {
@@ -200,15 +157,101 @@ namespace COLSnROWS {
             }
             Console.SetCursorPosition(17, 0);
             Console.Write("Scoreboard");
-            Console.SetCursorPosition(20, 1);
-            Console.Write("X: {0}", X_score);
-            Console.SetCursorPosition(20, 3);
-            Console.Write("O: {0}", O_score);
+            if (player) {
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(20, 1);
+                Console.Write("X: {0}", X_score);
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.SetCursorPosition(20, 3);
+                Console.Write("O: {0}", O_score);
+                Console.ResetColor();
+                return true;
+
+            } else {
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.SetCursorPosition(20, 1);
+                Console.Write("X: {0}", X_score);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(20, 3);
+                Console.Write("O: {0}", O_score);
+                Console.ResetColor();
+                return false;
+            }
             //Console.BackgroundColor = ConsoleColor.Black;
-
         }
+        //Method looking for rows or columns to be completed by only one player
+        static string Check(string [,] Array, int turn) {
+                    string A = Array[0, 0];
+                    string B = Array[0, 2];     //A|B|C
+                    string C = Array[0, 4];     //-----
+                    string D = Array[2, 0];     //D|E|F
+                    string E = Array[2, 2];     //-----
+                    string F = Array[2, 4];     //G|H|I
+                    string G = Array[4, 0];
+                    string H = Array[4, 2];
+                    string I = Array[4, 4];
 
-        static string Move() {
+                    if (E == A && E == I) {
+                        if (E.Equals(" ")) {
+                            return ("continue");
+                        } else {
+                            return (E + " WON!");
+                        }
+                    }
+                    if (E == D && E == F) {
+                        if (E.Equals(" ")) {
+                            return ("continue");
+                        } else {
+                            return (E + " WON!");
+                        }
+                    }
+                    if (E == G && E == C) {
+                        if (E.Equals(" ")) {
+                            return ("continue");
+                        } else {
+                            return (E + " WON!");
+                        }
+                    }
+                    if (E == H && E == B) {
+                        if (E.Equals(" ")) {
+                            return ("continue");
+                        } else {
+                            return (E + " WON!");
+                        }
+                    }
+                    if (F == C && F == I) {
+                        return (F + " WON!");
+                    }
+                    if (D == A && D == G) {
+                        if (D.Equals(" ")) {
+                            return ("continue");
+                        } else {
+                            return (D + " WON!");
+                        }
+                    }
+                    if (B == A && B == C) {
+                        if (B.Equals(" ")) {
+                            return ("continue");
+                        } else {
+                            return (B + " WON!");
+                        }
+                    }
+                    if (H == G && H == I) {
+                        if (H.Equals(" ")) {
+                            return ("continue");
+                        } else {
+                            return (H + " WON!");
+                        }
+                    }
+                    if (turn == 9) {
+                        return ("DRAW!");
+                    } else {
+                        return ("continue");
+                    }
+
+                }
+        //Allows the movement within the board
+        public static string Move() {
             Console.SetCursorPosition(2, 2);
             again:
             int Xpos = Console.CursorLeft;
@@ -268,81 +311,38 @@ namespace COLSnROWS {
                 goto again;
             }
         }
-
-        static string Check(string [,] Array, int turn) {
-            string A = Array[0, 0];
-            string B = Array[0, 2];     //A|B|C
-            string C = Array[0, 4];     //-----
-            string D = Array[2, 0];     //D|E|F
-            string E = Array[2, 2];     //-----
-            string F = Array[2, 4];     //G|H|I
-            string G = Array[4, 0];
-            string H = Array[4, 2];
-            string I = Array[4, 4];
-
-            if (E == A && E == I) {
-                if (E.Equals(" ")) {
-                    return ("continue");
-                } else {
-                    return (E + " WON!");
-                }
-            }
-            if (E == D && E == F) {
-                if (E.Equals(" ")) {
-                    return ("continue");
-                } else {
-                    return (E + " WON!");
-                }
-            }
-            if (E == G && E == C) {
-                if (E.Equals(" ")) {
-                    return ("continue");
-                } else {
-                    return (E + " WON!");
-                }
-            }
-            if (E == H && E == B) {
-                if (E.Equals(" ")) {
-                    return ("continue");
-                } else {
-                    return (E + " WON!");
-                }
-            }
-            if (F == C && F == I) {
-                return (F + " WON!");
-            }
-            if (D == A && D == G) {
-                if (D.Equals(" ")) {
-                    return ("continue");
-                } else {
-                    return (D + " WON!");
-                }
-            }
-            if (B == A && B == C) {
-                if (B.Equals(" ")) {
-                    return ("continue");
-                } else {
-                    return (B + " WON!");
-                }
-            }
-            if (H == G && H == I) {
-                if (H.Equals(" ")) {
-                    return ("continue");
-                } else {
-                    return (H + " WON!");
-                }
-            }
-            if (turn == 9) {
-                return ("DRAW!");
-            } else {
-                return ("continue");
-            }
-
+        //Makes a small delay
+        public static void SleepTime(int miliseconds) {
+            var t = Task.Run(async delegate {
+                await Task.Delay(miliseconds);
+                return 42;
+            });
+            t.Wait();
         }
-
-        //private void StartObserving() {
-        //    thread = new Thread(this.Game());
-        //    thread.Start();
-        //}
+        //A small effect changing the color of a text
+        public static void press() {
+            while (true) {
+                SleepTime(200);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+                SleepTime(150);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+                SleepTime(100);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+                SleepTime(50);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.SetCursorPosition(10, 4);
+                Console.Write("Press spacebar");
+            }
+        }
     }
 }
