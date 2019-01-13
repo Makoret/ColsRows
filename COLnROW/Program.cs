@@ -118,6 +118,8 @@ namespace COLSnROWS {
                 MusicPlay(Environment.CurrentDirectory + @"\Audio\End_Turn_bell.wav");
                 AskAgain:
                 Console.SetCursorPosition(0, 5);
+                Console.Write(veredict);
+                Console.SetCursorPosition(10, 5);
                 Console.Write("Continue?(y/n)");
                 ConsoleKeyInfo opt = Console.ReadKey(true);
                 if (opt.Key == ConsoleKey.Y) {
