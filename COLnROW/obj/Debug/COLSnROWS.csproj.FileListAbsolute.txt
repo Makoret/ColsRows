@@ -1,0 +1,7 @@
+C:\Users\user\source\repos\COLnROW\COLnROW\bin\Debug\COLnROW.exe.config
+C:\Users\user\source\repos\COLnROW\COLnROW\bin\Debug\COLnROW.exe
+C:\Users\user\source\repos\COLnROW\COLnROW\bin\Debug\COLnROW.pdb
+C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLSnROWS.csprojAssemblyReference.cache
+C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLSnROWS.csproj.CoreCompileInputs.cache
+C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLnROW.exe
+C:\Users\user\source\repos\COLnROW\COLnROW\obj\Debug\COLnROW.pdb
